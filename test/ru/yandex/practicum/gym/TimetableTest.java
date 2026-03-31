@@ -72,10 +72,12 @@ public class TimetableTest {
 
         timetable.addNewTrainingSession(singleTrainingSession);
 
-        TreeMap<TimeOfDay, ArrayList<TrainingSession>> mondayMap =
-                timetable.getTrainingSessionsForDay(DayOfWeek.MONDAY);
-        assertEquals(1, mondayMap.get(new TimeOfDay(13, 0)).size());//Проверить, что за понедельник в 13:00 вернулось одно занятие
-        assertEquals(0, mondayMap.getOrDefault(new TimeOfDay(14, 0), new ArrayList<>()).size());
+        ArrayList<TrainingSession> existingList =
+                timetable.getTrainingSessionsForDayAndTime(DayOfWeek.MONDAY, new TimeOfDay(13, 0));
+        ArrayList<TrainingSession> notExistingList =
+                timetable.getTrainingSessionsForDayAndTime(DayOfWeek.MONDAY, new TimeOfDay(14, 0));
+        assertEquals(1, existingList.size());//Проверить, что за понедельник в 13:00 вернулось одно занятие
+        assertEquals(0, notExistingList.size());
         //Проверить, что за понедельник в 14:00 не вернулось занятий
     }
 

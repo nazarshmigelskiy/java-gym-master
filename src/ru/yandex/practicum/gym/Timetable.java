@@ -1,6 +1,6 @@
 package ru.yandex.practicum.gym;
 
-import java.util.Comparator;
+
 import java.util.*;
 
 public class Timetable {
@@ -11,6 +11,10 @@ public class Timetable {
         timetable.computeIfAbsent(trainingSession.getDayOfWeek(), k -> new TreeMap<>())
                 .computeIfAbsent(trainingSession.getTimeOfDay(), k -> new ArrayList<>())
                 .add(trainingSession);
+
+//         Сначала написал код ниже, сильно не понравилось, как он выглядит, решил поглядеть, как можно его сократить
+//        и наткнулся на метод computeIfAbsent. Странно, что в курсе его не дают, он как будто идеально для этого задания подходит
+
 //        if (timetable.containsKey(trainingSession.getDayOfWeek())) {
 //            TreeMap<TimeOfDay, ArrayList<TrainingSession>> timeOfDayTraining =
 //                    timetable.get(trainingSession.getDayOfWeek());
