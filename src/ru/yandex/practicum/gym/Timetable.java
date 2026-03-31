@@ -6,34 +6,14 @@ import java.util.*;
 public class Timetable {
 
     private Map<DayOfWeek, TreeMap<TimeOfDay, ArrayList<TrainingSession>>> timetable = new HashMap<>();
+    private HashMap<Coach, Integer> coachesCounter = new HashMap<>();
 
     public void addNewTrainingSession(TrainingSession trainingSession) {
         timetable.computeIfAbsent(trainingSession.getDayOfWeek(), k -> new TreeMap<>())
                 .computeIfAbsent(trainingSession.getTimeOfDay(), k -> new ArrayList<>())
                 .add(trainingSession);
-
-//         Сначала написал код ниже, сильно не понравилось, как он выглядит, решил поглядеть, как можно его сократить
-//        и наткнулся на метод computeIfAbsent. Странно, что в курсе его не дают, он как будто идеально для этого задания подходит
-
-//        if (timetable.containsKey(trainingSession.getDayOfWeek())) {
-//            TreeMap<TimeOfDay, ArrayList<TrainingSession>> timeOfDayTraining =
-//                    timetable.get(trainingSession.getDayOfWeek());
-//            ArrayList<TrainingSession> list;
-//            if (timeOfDayTraining.containsKey(trainingSession.getTimeOfDay())) {
-//                list = timeOfDayTraining.get(trainingSession.getTimeOfDay());
-//            } else {
-//                list = new ArrayList<>();
-//            }
-//            list.add(trainingSession);
-//            timeOfDayTraining.put(trainingSession.getTimeOfDay(), list);
-//            timetable.put(trainingSession.getDayOfWeek(), timeOfDayTraining);
-//        } else {
-//            TreeMap<TimeOfDay, ArrayList<TrainingSession>> timeOfDayTraining = new TreeMap<>();
-//            ArrayList<TrainingSession> list = new ArrayList<>();
-//            list.add(trainingSession);
-//            timeOfDayTraining.put(trainingSession.getTimeOfDay(), list);
-//            timetable.put(trainingSession.getDayOfWeek(), timeOfDayTraining);
-//        }
+        Coach currentCoach = trainingSession.getCoach();
+        coachesCounter.put(currentCoach, coachesCounter.getOrDefault(currentCoach, 0) + 1);
     }
 
 
@@ -47,22 +27,12 @@ public class Timetable {
     }
 
     public ArrayList<CoachTrainingCounter> getCountByCoaches() {
-        Map<Coach, Integer> countByCoaches = new HashMap<>();
         ArrayList<CoachTrainingCounter> list = new ArrayList<>();
-        for (TreeMap<TimeOfDay, ArrayList<TrainingSession>> time : timetable.values()) {
-            for (ArrayList<TrainingSession> sessions : time.values()) {
-                for (TrainingSession session : sessions) {
-                    int count = countByCoaches.getOrDefault(session.getCoach(), 0);
-                    count++;
-                    countByCoaches.put(session.getCoach(), count);
-                }
-            }
+        for (Coach coach : coachesCounter.keySet()) {
+            CoachTrainingCounter coachTrainingCounter = new CoachTrainingCounter(coach, coachesCounter.get(coach));
+            list.add(coachTrainingCounter);
         }
-        for (Map.Entry<Coach, Integer> coachIntegerEntry : countByCoaches.entrySet()) {
-            Coach key = coachIntegerEntry.getKey();
-            Integer value = coachIntegerEntry.getValue();
-            list.add(new CoachTrainingCounter(key, value));
-        }
+
         list.sort((o1, o2) -> o2.getTrainingCounter() - o1.getTrainingCounter());
         return list;
     }
